@@ -1,6 +1,12 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
+# Win32 MessageBeep for reliable sound in GUI apps
+Add-Type -Namespace Win32 -Name Sound -MemberDefinition @'
+[DllImport("user32.dll")]
+public static extern bool MessageBeep(int uType);
+'@
+
 $statusFile = "$env:USERPROFILE\.claude\status.json"
 $width = 64
 $height = 168
@@ -101,6 +107,17 @@ $form.Add_Paint({
     }
 })
 
+function Play-Sound($state) {
+    try {
+        switch ($state) {
+            # MB_ICONASTERISK=0x40  MB_ICONEXCLAMATION=0x30  MB_OK=0
+            "running" { [Win32.Sound]::MessageBeep(0) }
+            "waiting" { [Win32.Sound]::MessageBeep(0x30); Start-Sleep -Milliseconds 200; [Win32.Sound]::MessageBeep(0x30) }
+            "stopped" { [Win32.Sound]::MessageBeep(0x40) }
+        }
+    } catch {}
+}
+
 $timer = New-Object System.Windows.Forms.Timer
 $timer.Interval = 500
 $timer.Add_Tick({
@@ -108,6 +125,7 @@ $timer.Add_Tick({
     if ($newState -ne $script:currentState) {
         $script:currentState = $newState
         $form.Invalidate()
+        Play-Sound $newState
     }
 })
 $timer.Start()
