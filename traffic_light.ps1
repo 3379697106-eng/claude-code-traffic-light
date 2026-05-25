@@ -1,11 +1,13 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-# Win32 MessageBeep for reliable sound in GUI apps
+# PlaySound from winmm.dll — plays specific Windows WAV files
 Add-Type -Namespace Win32 -Name Sound -MemberDefinition @'
-[DllImport("user32.dll")]
-public static extern bool MessageBeep(int uType);
+[DllImport("winmm.dll", CharSet = CharSet.Auto)]
+public static extern bool PlaySound(string sound, System.IntPtr hmod, int flags);
 '@
+$SND_ASYNC = 1
+$SND_FILENAME = 0x20000
 
 $statusFile = "$env:USERPROFILE\.claude\status.json"
 $width = 64
@@ -16,6 +18,14 @@ $colors = @{
     waiting = @{ fill = "#f1c40f"; glow = "#ffe066" }
     stopped = @{ fill = "#2ecc71"; glow = "#5eff8a" }
 }
+# ---- 自定义音效：改成你喜欢的 .wav 文件路径，设 $null 则静音 ----
+$soundFiles = @{
+    running = "C:\Windows\Media\Windows Hardware Fail.wav"      # 红灯音效
+    waiting = "C:\Windows\Media\Windows Message Nudge.wav"    # 黄灯音效
+    stopped = "C:\Windows\Media\Windows Balloon.wav"            # 绿灯音效
+}
+# ---------------------------------------------------------
+
 $dark = "#3a3a3a"
 $bg   = "#2d2d2d"
 
@@ -70,9 +80,22 @@ $form.Add_MouseUp({
     if ($_.Button -eq "Left") { $script:dragging = $false }
 })
 
+$soundEnabled = $true
+
 $menu = New-Object System.Windows.Forms.ContextMenuStrip
-$exitItem = $menu.Items.Add("Exit")
+$muteItem = New-Object System.Windows.Forms.ToolStripMenuItem
+$muteItem.Text = "Mute sounds"
+$muteItem.ShortcutKeyDisplayString = ""
+$muteItem.Add_Click({
+    $script:soundEnabled = -not $script:soundEnabled
+    $muteItem.Text = if ($script:soundEnabled) { "Mute sounds" } else { "Unmute sounds" }
+})
+$menu.Items.Add($muteItem) | Out-Null
+$menu.Items.Add("-") | Out-Null
+$exitItem = New-Object System.Windows.Forms.ToolStripMenuItem
+$exitItem.Text = "Exit"
 $exitItem.Add_Click({ $form.Close() })
+$menu.Items.Add($exitItem) | Out-Null
 $form.ContextMenuStrip = $menu
 
 $form.Add_Paint({
@@ -109,11 +132,11 @@ $form.Add_Paint({
 
 function Play-Sound($state) {
     try {
-        switch ($state) {
-            # MB_ICONASTERISK=0x40  MB_ICONEXCLAMATION=0x30  MB_OK=0
-            "running" { [Win32.Sound]::MessageBeep(0) }
-            "waiting" { [Win32.Sound]::MessageBeep(0x30); Start-Sleep -Milliseconds 200; [Win32.Sound]::MessageBeep(0x30) }
-            "stopped" { [Win32.Sound]::MessageBeep(0x40) }
+        if (-not $script:soundEnabled) { return }
+        $path = $script:soundFiles[$state]
+        if ($path) {
+            $flags = $SND_ASYNC -bor $SND_FILENAME
+            [Win32.Sound]::PlaySound($path, [IntPtr]::Zero, $flags)
         }
     } catch {}
 }
