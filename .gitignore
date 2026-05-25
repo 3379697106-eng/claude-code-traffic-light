@@ -2,8 +2,9 @@
 extension/out/
 extension/node_modules/
 
-# User-specific config (has local paths)
+# User-specific config
 .claude/settings.json
+.claude/skills/
 
 # OS files
 Thumbs.db
