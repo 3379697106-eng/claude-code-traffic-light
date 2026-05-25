@@ -1,0 +1,10 @@
+# VS Code extension build output
+extension/out/
+extension/node_modules/
+
+# User-specific config (has local paths)
+.claude/settings.json
+
+# OS files
+Thumbs.db
+.DS_Store

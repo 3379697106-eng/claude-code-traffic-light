@@ -1,0 +1,32 @@
+{
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "",
+      "hooks": [{ "type": "command", "command": "powershell -ExecutionPolicy Bypass -File \"你的路径/status_writer.ps1\" -State running" }]
+    }],
+    "Stop": [{
+      "matcher": "",
+      "hooks": [{ "type": "command", "command": "powershell -ExecutionPolicy Bypass -File \"你的路径/status_writer.ps1\" -State stopped" }]
+    }],
+    "UserPromptSubmit": [{
+      "matcher": "",
+      "hooks": [{ "type": "command", "command": "powershell -ExecutionPolicy Bypass -File \"你的路径/status_writer.ps1\" -State running" }]
+    }],
+    "PermissionRequest": [{
+      "matcher": "",
+      "hooks": [{ "type": "command", "command": "powershell -ExecutionPolicy Bypass -File \"你的路径/status_writer.ps1\" -State waiting" }]
+    }],
+    "Elicitation": [{
+      "matcher": "",
+      "hooks": [{ "type": "command", "command": "powershell -ExecutionPolicy Bypass -File \"你的路径/status_writer.ps1\" -State waiting" }]
+    }],
+    "PostToolUse": [{
+      "matcher": "",
+      "hooks": [{ "type": "command", "command": "powershell -ExecutionPolicy Bypass -File \"你的路径/status_writer.ps1\" -State running" }]
+    }],
+    "SessionEnd": [{
+      "matcher": "",
+      "hooks": [{ "type": "command", "command": "powershell -ExecutionPolicy Bypass -File \"你的路径/status_writer.ps1\" -State stopped" }]
+    }]
+  }
+}

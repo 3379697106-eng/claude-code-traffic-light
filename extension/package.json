@@ -1,0 +1,36 @@
+{
+  "name": "claude-traffic-light",
+  "displayName": "Claude Code Traffic Light",
+  "description": "Desktop traffic light indicator for Claude Code status",
+  "version": "1.0.0",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "claude-traffic-light.start",
+        "title": "Start Traffic Light Monitor"
+      },
+      {
+        "command": "claude-traffic-light.stop",
+        "title": "Stop Traffic Light Monitor"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.0.0"
+  }
+}
