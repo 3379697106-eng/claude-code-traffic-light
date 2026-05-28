@@ -63,9 +63,24 @@ powershell -ExecutionPolicy Bypass -File "路径/traffic_light.ps1"
 
 Hooks 在 Claude Code 重启后生效。
 
+## 自定义音效
+
+编辑 `traffic_light.ps1` 顶部的 `$soundFiles`，换成任意 `.wav` 路径即可：
+
+```powershell
+$soundFiles = @{
+    running = "C:\Windows\Media\Windows Ding.wav"    # 红灯
+    waiting = "C:\Windows\Media\Windows Notify.wav"  # 黄灯
+    stopped = "C:\Windows\Media\chimes.wav"          # 绿灯
+}
+```
+
+系统自带音效在 `C:\Windows\Media\`，设为 `$null` 则该状态静音。
+
 ## 交互
 
-- **拖动**：左键按住拖动窗口
+- **拖动窗口**：左键按住拖动
+- **静音开关**：右键 → `Mute sounds` / `Unmute sounds`
 - **退出**：右键 → Exit
 
 ## 文件说明
